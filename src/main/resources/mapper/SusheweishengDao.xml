@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.SusheweishengDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.sushe_id as susheId
+        ,a.weisheng_types as weishengTypes
+        ,a.weisheng_content as weishengContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.SusheweishengView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,sushe.building as building
+        ,sushe.unit as unit
+        ,sushe.room as room
+        ,sushe.sushe_number as susheNumber
+
+        FROM susheweisheng  a
+        left JOIN sushe sushe ON a.sushe_id = sushe.id
+
+        <where>
+            <if test="params.susheId != null">
+                and a.sushe_id = #{params.susheId}
+            </if>
+            <if test="params.weishengTypes != null">
+                and a.weisheng_types = #{params.weishengTypes}
+            </if>
+            <if test=" params.weishengContent != '' and params.weishengContent != null and params.weishengContent != 'null' ">
+                and a.weisheng_content like CONCAT('%',#{params.weishengContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and DATE_FORMAT(a.insert_time, '%Y-%m-%d %H:%T:%s') >=
+                DATE_FORMAT(#{params.insertTimeStart}, '%Y-%m-%d %H:%T:%s')   ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and DATE_FORMAT(a.insert_time, '%Y-%m-%d %H:%T:%s') <=
+                DATE_FORMAT(#{params.insertTimeEnd} , '%Y-%m-%d %H:%T:%s')    ]]>
+            </if>
+
+            <if test=" params.building != '' and params.building != null and params.building != 'null' ">
+                and sushe.building like CONCAT('%',#{params.building},'%')
+            </if>
+            <if test=" params.unit != '' and params.unit != null and params.unit != 'null' ">
+                and sushe.unit like CONCAT('%',#{params.unit},'%')
+            </if>
+            <if test=" params.room != '' and params.room != null and params.room != 'null' ">
+                and sushe.room like CONCAT('%',#{params.room},'%')
+            </if>
+            <if test="params.susheNumberStart != null ">
+                <![CDATA[  and sushe.sushe_number >= #{params.susheNumberStart}   ]]>
+            </if>
+            <if test="params.susheNumberEnd != null ">
+                <![CDATA[  and sushe.sushe_number <= #{params.susheNumberEnd}   ]]>
+            </if>
+        </where>
+        order by a.id desc
+    </select>
+
+</mapper>

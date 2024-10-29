@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.YonghuweishengDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.yonghu_id as yonghuId
+        ,a.weisheng_types as weishengTypes
+        ,a.weisheng_content as weishengContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.YonghuweishengView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,yonghu.username as username
+        ,yonghu.password as password
+        ,yonghu.name as name
+        ,yonghu.phone as phone
+        ,yonghu.id_number as idNumber
+        ,yonghu.sex_types as sexTypes
+        ,yonghu.banji_types as banjiTypes
+        ,yonghu.my_photo as myPhoto
+        ,yonghu.nation as nation
+        ,yonghu.politics_types as politicsTypes
+        ,yonghu.birthplace as birthplace
+
+        FROM yonghuweisheng  a
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.yonghuId != null">
+                and a.yonghu_id = #{params.yonghuId}
+            </if>
+            <if test="params.weishengTypes != null">
+                and a.weisheng_types = #{params.weishengTypes}
+            </if>
+            <if test=" params.weishengContent != '' and params.weishengContent != null and params.weishengContent != 'null' ">
+                and a.weisheng_content like CONCAT('%',#{params.weishengContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and DATE_FORMAT(a.insert_time, '%Y-%m-%d %H:%T:%s') >=
+                DATE_FORMAT(#{params.insertTimeStart}, '%Y-%m-%d %H:%T:%s')   ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and DATE_FORMAT(a.insert_time, '%Y-%m-%d %H:%T:%s') <=
+                DATE_FORMAT(#{params.insertTimeEnd} , '%Y-%m-%d %H:%T:%s')    ]]>
+            </if>
+
+            <if test=" params.username != '' and params.username != null and params.username != 'null' ">
+                and yonghu.username like CONCAT('%',#{params.username},'%')
+            </if>
+            <if test=" params.password != '' and params.password != null and params.password != 'null' ">
+                and yonghu.password like CONCAT('%',#{params.password},'%')
+            </if>
+            <if test=" params.name != '' and params.name != null and params.name != 'null' ">
+                and yonghu.name like CONCAT('%',#{params.name},'%')
+            </if>
+            <if test=" params.phone != '' and params.phone != null and params.phone != 'null' ">
+                and yonghu.phone like CONCAT('%',#{params.phone},'%')
+            </if>
+            <if test=" params.idNumber != '' and params.idNumber != null and params.idNumber != 'null' ">
+                and yonghu.id_number like CONCAT('%',#{params.idNumber},'%')
+            </if>
+            <if test="params.sexTypes != null">
+                and yonghu.sex_types = #{params.sexTypes}
+            </if>
+
+            <if test="params.banjiTypes != null">
+                and yonghu.banji_types = #{params.banjiTypes}
+            </if>
+
+            <if test=" params.nation != '' and params.nation != null and params.nation != 'null' ">
+                and yonghu.nation like CONCAT('%',#{params.nation},'%')
+            </if>
+            <if test="params.politicsTypes != null">
+                and yonghu.politics_types = #{params.politicsTypes}
+            </if>
+
+            <if test=" params.birthplace != '' and params.birthplace != null and params.birthplace != 'null' ">
+                and yonghu.birthplace like CONCAT('%',#{params.birthplace},'%')
+            </if>
+        </where>
+        order by a.id desc
+    </select>
+
+</mapper>

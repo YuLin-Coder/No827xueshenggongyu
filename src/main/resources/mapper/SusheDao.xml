@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.SusheDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.building as building
+        ,a.unit as unit
+        ,a.room as room
+        ,a.sushe_number as susheNumber
+        ,a.create_time as createTime
+    </sql>
+
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.SusheView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+
+        FROM sushe  a
+
+        <where>
+            <if test="params.id != null ">
+                and a.id=#{params.id}
+            </if>
+            <if test=" params.building != '' and params.building != null and params.building != 'null' ">
+                and a.building like CONCAT('%',#{params.building},'%')
+            </if>
+            <if test=" params.unit != '' and params.unit != null and params.unit != 'null' ">
+                and a.unit like CONCAT('%',#{params.unit},'%')
+            </if>
+            <if test=" params.room != '' and params.room != null and params.room != 'null' ">
+                and a.room like CONCAT('%',#{params.room},'%')
+            </if>
+            <if test="params.susheNumberStart != null">
+                <![CDATA[  and a.sushe_number >= #{params.susheNumberStart}   ]]>
+            </if>
+            <if test="params.susheNumberEnd != null">
+                <![CDATA[  and a.sushe_number <= #{params.susheNumberEnd}   ]]>
+            </if>
+
+        </where>
+        order by a.id desc
+    </select>
+
+</mapper>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ZichanDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.sushe_id as susheId
+        ,a.zichan_name as zichanName
+        ,a.zichan_types as zichanTypes
+        ,a.zichan_content as zichanContent
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ZichanView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,sushe.building as building
+        ,sushe.unit as unit
+        ,sushe.room as room
+        ,sushe.sushe_number as susheNumber
+
+        FROM zichan  a
+        left JOIN sushe sushe ON a.sushe_id = sushe.id
+
+        <where>
+            <if test="params.susheId != null">
+                and a.sushe_id = #{params.susheId}
+            </if>
+            <if test=" params.zichanName != '' and params.zichanName != null and params.zichanName != 'null' ">
+                and a.zichan_name like CONCAT('%',#{params.zichanName},'%')
+            </if>
+            <if test="params.zichanTypes != null">
+                and a.zichan_types = #{params.zichanTypes}
+            </if>
+            <if test=" params.zichanContent != '' and params.zichanContent != null and params.zichanContent != 'null' ">
+                and a.zichan_content like CONCAT('%',#{params.zichanContent},'%')
+            </if>
+
+            <if test=" params.building != '' and params.building != null and params.building != 'null' ">
+                and sushe.building like CONCAT('%',#{params.building},'%')
+            </if>
+            <if test=" params.unit != '' and params.unit != null and params.unit != 'null' ">
+                and sushe.unit like CONCAT('%',#{params.unit},'%')
+            </if>
+            <if test=" params.room != '' and params.room != null and params.room != 'null' ">
+                and sushe.room like CONCAT('%',#{params.room},'%')
+            </if>
+            <if test="params.susheNumberStart != null ">
+                <![CDATA[  and sushe.sushe_number >= #{params.susheNumberStart}   ]]>
+            </if>
+            <if test="params.susheNumberEnd != null ">
+                <![CDATA[  and sushe.sushe_number <= #{params.susheNumberEnd}   ]]>
+            </if>
+        </where>
+        order by a.id desc
+    </select>
+
+</mapper>

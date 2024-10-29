@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.YonghuDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.username as username
+        ,a.password as password
+        ,a.name as name
+        ,a.phone as phone
+        ,a.id_number as idNumber
+        ,a.sex_types as sexTypes
+        ,a.banji_types as banjiTypes
+        ,a.my_photo as myPhoto
+        ,a.nation as nation
+        ,a.politics_types as politicsTypes
+        ,a.birthplace as birthplace
+        ,a.create_time as createTime
+    </sql>
+
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.YonghuView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+
+        FROM yonghu  a
+
+        <where>
+            <if test=" params.username != '' and params.username != null and params.username != 'null' ">
+                and a.username like CONCAT('%',#{params.username},'%')
+            </if>
+            <if test=" params.password != '' and params.password != null and params.password != 'null' ">
+                and a.password like CONCAT('%',#{params.password},'%')
+            </if>
+            <if test=" params.name != '' and params.name != null and params.name != 'null' ">
+                and a.name like CONCAT('%',#{params.name},'%')
+            </if>
+            <if test=" params.phone != '' and params.phone != null and params.phone != 'null' ">
+                and a.phone like CONCAT('%',#{params.phone},'%')
+            </if>
+            <if test=" params.idNumber != '' and params.idNumber != null and params.idNumber != 'null' ">
+                and a.id_number like CONCAT('%',#{params.idNumber},'%')
+            </if>
+            <if test="params.sexTypes != null">
+                and a.sex_types = #{params.sexTypes}
+            </if>
+            <if test="params.banjiTypes != null">
+                and a.banji_types = #{params.banjiTypes}
+            </if>
+            <if test=" params.nation != '' and params.nation != null and params.nation != 'null' ">
+                and a.nation like CONCAT('%',#{params.nation},'%')
+            </if>
+            <if test="params.politicsTypes != null">
+                and a.politics_types = #{params.politicsTypes}
+            </if>
+            <if test=" params.birthplace != '' and params.birthplace != null and params.birthplace != 'null' ">
+                and a.birthplace like CONCAT('%',#{params.birthplace},'%')
+            </if>
+
+        </where>
+        order by a.id desc
+    </select>
+
+</mapper>
